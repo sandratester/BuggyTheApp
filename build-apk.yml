@@ -1,0 +1,40 @@
+name: Build APKs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Debug and Test APK
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
+    - name: Give gradlew permission
+      run: chmod +x ./gradlew
+
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
+
+    - name: Build Android Test APK
+      run: ./gradlew assembleAndroidTest
+
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-apk
+        path: app/build/outputs/apk/debug/app-debug.apk
+
+    - name: Upload Test APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-apk
+        path: app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
